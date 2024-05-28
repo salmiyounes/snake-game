@@ -4,17 +4,13 @@ import java.awt.*;
 import java.awt.event.*; 
 import javax.swing.*; 
 
-public class Snake extends JPanel implements ActionListener, KeyListener {
 
-	enum Direction {
-		Up,
-		Down,
-		Right,
-		Left
-	}
+
+public class Snake extends JPanel implements ActionListener, KeyListener {
 
 	public static int[][] board;
 	public static int score = 0;
+	public static int maxscore = 0;
 	public static int SIZE;
 	public static int Width;
 	public static int Height;
@@ -46,6 +42,27 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		draw(g);
 	}
 
+	public void cleanBoard() {
+		for (int i = 0; i < Width/SIZE; i++) {
+			for (int j = 0; j < Width/SIZE; j++) {
+				board[i][j] = 0;
+			}
+		}
+	}
+
+	public void reset() {
+		head = new Tuple(5, 5);
+		body = new ArrayList<>();
+		body.add(new Tuple(4,5));
+		body.add(new Tuple(3,5));
+		direction = Direction.Right;
+		gameover = false;
+		maxscore = Math.max(maxscore, score);
+		score = 0;
+		cleanBoard();
+		spwanFood();
+	}
+
 	public void draw(Graphics g) {
 		// snake head
 		g.setColor(Color.GREEN);
@@ -61,8 +78,13 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 			g.fill3DRect(l.x * SIZE, l.y * SIZE, SIZE, SIZE, true);
 		}
 		g.setColor(Color.WHITE);
+		
 		g.setFont(new Font("Arial", Font.PLAIN, 20));
 		g.drawString("Score : " + String.valueOf(score), SIZE - 20, SIZE);
+		
+		g.setFont(new Font("Arial", Font.PLAIN, 20));
+		g.drawString("Max Score : " + String.valueOf(maxscore), SIZE + 100, SIZE);
+
 
 	}
 
@@ -142,7 +164,9 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent event) {
 		repaint();
 		move();
-		if (gameover) gameloop.stop();
+		if (gameover) {
+			reset();
+		}
 	} 
 
 	@Override

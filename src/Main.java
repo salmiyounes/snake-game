@@ -7,7 +7,7 @@ import javax.swing.*;
 class Main {
 	final static int width  = 600;
 	final static int height = 600;
-	final static int blockSzie = 50;
+	final static int blockSzie = 25;
 	static JFrame frame;
 	static JPanel panel;
 
