@@ -15,8 +15,10 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 	public static int Width;
 	public static int Height;
 	public static Tuple food;
+	SnakeAi snakeai;
 	Timer gameloop;
 	Boolean gameover = false;
+	Boolean ai = false;
 	public static ArrayList<Tuple> body = new ArrayList<>();
 	public static Tuple head = new Tuple(5, 5);
 	static Direction direction = Direction.Right;
@@ -26,9 +28,9 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		Width = width;
 		Height = height;
 		createBoard();
+		spwanFood();
 		body.add(new Tuple(4, 5));
 		body.add(new Tuple(3, 5));
-		spwanFood();
 		setPreferredSize(new Dimension(Width, Height));
         setBackground(Color.black);
         addKeyListener(this);
@@ -73,9 +75,11 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		g.fill3DRect(food.x * SIZE, food.y * SIZE, SIZE, SIZE, true); 
 
 		// snake body
+		int i = 0;
 		for (Tuple l : body) {
-			g.setColor(Color.BLUE);
+			g.setColor(Color.BLUE); 
 			g.fill3DRect(l.x * SIZE, l.y * SIZE, SIZE, SIZE, true);
+			i ++;
 		}
 		g.setColor(Color.WHITE);
 		
@@ -160,10 +164,45 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		if (bodyCollision()) gameover = true;
 	}
 
+	public void aimove() {
+			eatFood();
+			snakeai = new SnakeAi(food, board, direction);
+			// move the snake body 
+			for (int i = body.size() -1 ; i >= 0; i--) {
+				Tuple snakepart = body.get(i);
+				if (i == 0) {
+					snakepart.x = head.x;
+					snakepart.y = head.y;
+				}
+				else {
+					Tuple prevsnakepart = body.get(i-1);
+					snakepart.x = prevsnakepart.x;
+					snakepart.y = prevsnakepart.y;
+				}
+			}
+
+			direction = snakeai.nextMove(head);
+			if (direction == Direction.Up) {
+				head.y --;
+			}
+			if (direction == Direction.Down) {
+				head.y ++;
+			}
+			if (direction == Direction.Right) {
+				head.x ++;
+			}
+			if (direction == Direction.Left) {
+				head.x --;
+			}
+			if (wallCollision(Width/SIZE)) gameover = true;
+			if (bodyCollision()) gameover = true;
+	}
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		repaint();
-		move();
+		if (!(ai)) {
+			move();
+		} else {aimove();}
 		if (gameover) {
 			reset();
 		}
@@ -174,16 +213,22 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		int key = e.getKeyCode();
 		if (key == KeyEvent.VK_UP && direction != Direction.Down) {
 			direction = Direction.Up;
+			ai = false;
 		}
 		if (key == KeyEvent.VK_DOWN && direction != Direction.Up) {
 			direction = Direction.Down;
+			ai = false;
 		}
 		if (key == KeyEvent.VK_RIGHT && direction != Direction.Left) {
 			direction = Direction.Right;
+			ai = false;
 		}
 		if (key == KeyEvent.VK_LEFT && direction != Direction.Right) {
 			direction = Direction.Left;
+			ai = false;
 		}
+
+		if (key == KeyEvent.VK_SPACE) ai = true;
 	}
 
 	@Override

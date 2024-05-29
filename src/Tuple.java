@@ -1,5 +1,5 @@
 
-public class Tuple { 
+public class Tuple{ 
 
     public Integer x; 
     public Integer y; 
@@ -27,6 +27,7 @@ public class Tuple {
         this.x = other.x;
         this.y = other.y;
     }
+
     @Override
     public String toString() {
         return "(" + x + "," + y + ")";
@@ -34,3 +35,4 @@ public class Tuple {
 
 
 }
+
