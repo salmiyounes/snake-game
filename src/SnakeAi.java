@@ -10,8 +10,10 @@ public class SnakeAi {
 	Tuple food;
 	HashMap<Tuple, Boolean> map;
 	PriorityQueue<Tuple> queue;
+	ArrayList<Tuple> snakebody; 
  
-	SnakeAi(Tuple food, int[][] board, Direction direction) {
+	SnakeAi(Tuple food, int[][] board, Direction direction, ArrayList<Tuple> snakebody) {
+		this.snakebody = snakebody;
 		this.board = board;
 		this.food  = food;
 		this.direction = direction;
@@ -34,7 +36,12 @@ public class SnakeAi {
 		result.add(new Tuple(pos.x, pos.y -1 ));
 		return result;
 	}
-	
+	public Boolean partoftheBody(ArrayList<Tuple> body, Tuple pos) {
+		for (Tuple part: body) {
+			if (part.x == pos.x && part.y == pos.y) {return true;}
+		}
+		return false;
+	}
 	public ArrayList<Tuple> bestfirstSearch(Tuple start) {
 		HashMap<Tuple, Boolean> visited = new HashMap<>();
 		HashMap<Tuple, Tuple> cameFrom = new HashMap<>();
@@ -45,7 +52,8 @@ public class SnakeAi {
 			Tuple curr = queue.peek();
 			queue.remove(curr);
 			for (Tuple l : generateNeighbors(curr)) {
-				if (!ishere(visited, l)) {
+				System.out.println(l);
+				if (!ishere(visited, l) && !(partoftheBody(this.snakebody, l)) && !(isgoodMove(l))) {
 					if (l.x == this.food.x && l.y == this.food.y) {
 						cameFrom.put(l, curr);
 						return reconstructPath(cameFrom, l);
@@ -60,6 +68,9 @@ public class SnakeAi {
 		}
 
 		return null;
+	}
+	public Boolean isgoodMove(Tuple pos) {
+		return ( (pos.x >= this.board.length) || (pos.x < 0) || (pos.y >= this.board.length) || (pos.y < 0)) ? true:false;
 	}
 	public Boolean makeSure(Set<Tuple> list, Tuple pos) {
 		for (Tuple l : list) {
@@ -81,12 +92,16 @@ public class SnakeAi {
 
 	public Direction nextMove(Tuple start) {
 		ArrayList<Tuple> path =  bestfirstSearch(start);
-		Tuple nextStep = path.get(0);
-		if (nextStep.x == start.x + 1) return Direction.Right;
-        if (nextStep.x == start.x - 1) return Direction.Left;
-        if (nextStep.y == start.y + 1) return Direction.Down;
-        if (nextStep.y == start.y - 1) return Direction.Up;
-        return null;
+		if ((path != null))
+			if (!(path.isEmpty())) {
+				Tuple nextStep = path.get(0);
+				//System.out.println(nextStep);
+				if (nextStep.x == start.x + 1) return Direction.Right;
+        		if (nextStep.x == start.x - 1) return Direction.Left;
+        		if (nextStep.y == start.y + 1) return Direction.Down;
+        		if (nextStep.y == start.y - 1) return Direction.Up;
+        }
+        return Direction.Right;
 	}
 
 

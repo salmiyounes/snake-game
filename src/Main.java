@@ -5,9 +5,9 @@ import java.awt.event.*;
 import javax.swing.*; 
 
 class Main {
-	final static int width  = 500;
-	final static int height = 500;
-	final static int blockSzie = 60;
+	final static int width  = 600;
+	final static int height = 600;
+	final static int blockSzie = 25;
 	static JFrame frame;
 	static JPanel panel;
 

@@ -35,7 +35,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
         setBackground(Color.black);
         addKeyListener(this);
         setFocusable(true);
-        gameloop = new Timer(100, this);
+        gameloop = new Timer(25, this);
         gameloop.start();
 	}
 
@@ -166,7 +166,7 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 
 	public void aimove() {
 			eatFood();
-			snakeai = new SnakeAi(food, board, direction);
+			snakeai = new SnakeAi(food, board, direction, body);
 			// move the snake body 
 			for (int i = body.size() -1 ; i >= 0; i--) {
 				Tuple snakepart = body.get(i);
@@ -202,7 +202,9 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 		repaint();
 		if (!(ai)) {
 			move();
-		} else {aimove();}
+		} else {
+			aimove();
+		}
 		if (gameover) {
 			reset();
 		}
@@ -228,7 +230,9 @@ public class Snake extends JPanel implements ActionListener, KeyListener {
 			ai = false;
 		}
 
-		if (key == KeyEvent.VK_SPACE) ai = true;
+		else {
+			ai = true;
+		} 
 	}
 
 	@Override
